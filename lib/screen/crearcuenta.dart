@@ -1,7 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
-
+import 'package:http/http.dart' as http;
 import 'package:banktrust/base/database.dart';
 
 class CrearCuenta extends StatefulWidget {
@@ -9,6 +11,29 @@ class CrearCuenta extends StatefulWidget {
 
   @override
   State<CrearCuenta> createState() => _CrearCuentaState();
+}
+
+void mtd_crear_cuenta() async
+{
+  final url = Uri.parse('http://192.168.200.46:9000/INSERT_CUENTAS'); // Cambia si usas dispositivo físico
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      'NUMERO': "1002",
+      'CLAVE': "CLAVE2",
+      'NOMBRE': "NOMBRE",
+      'SALDO': "100",
+      'IMAGEN': "",
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    print("Login correcto: $data");
+  } else {
+    print("Error: ${response.statusCode} - ${response.body}");
+  }
 }
 
 class _CrearCuentaState extends State<CrearCuenta> {
@@ -55,6 +80,8 @@ class _CrearCuentaState extends State<CrearCuenta> {
           contrasena,
           tiposCuenta[tipoSeleccionado]!,
         );
+
+        mtd_crear_cuenta();
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Cuenta creada exitosamente')),
